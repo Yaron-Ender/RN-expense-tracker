@@ -1,0 +1,4 @@
+
+firebase url         
+https://react-native-expense-tra-68f45-default-rtdb.europe-west1.firebasedatabase.app/
+
