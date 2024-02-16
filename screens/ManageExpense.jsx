@@ -6,8 +6,11 @@ import { GlobalStyles } from "../constants/styles";
 //context
 import { useContext } from "react";
 import { ExpensesContext } from "../store/expense-contex";
+//firestore
+import { useFirestore } from "../hooks/useFirestore";
 function ManageExpenses({ route, navigation }) {
   const expenseCtx = useContext(ExpensesContext);
+  const {addDocument} = useFirestore('expenses');
   //we have to check witch event navigated to here
   // add expense or edit expense
   // if the id is defined it means that we should display edit expense
@@ -35,6 +38,7 @@ function ManageExpenses({ route, navigation }) {
     if (isEditing) {
       expenseCtx.updateExpense(editedExpenseId,expenseData);
     } else {
+      addDocument(expenseData)
       expenseCtx.addExpense(expenseData);
     }
     navigation.goBack();
