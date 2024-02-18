@@ -11,6 +11,7 @@ import { useFirestore } from "../hooks/useFirestore";
 function ManageExpenses({ route, navigation }) {
   const expenseCtx = useContext(ExpensesContext);
   const {addDocument} = useFirestore('expenses');
+  
   //we have to check witch event navigated to here
   // add expense or edit expense
   // if the id is defined it means that we should display edit expense
@@ -32,12 +33,13 @@ function ManageExpenses({ route, navigation }) {
     navigation.goBack();
   }
   function cancelHandler() {
-    navigation.goBack();
+    navigation.goBack(); 
   }
   function confirmHandler(expenseData) {
     if (isEditing) {
       expenseCtx.updateExpense(editedExpenseId,expenseData);
     } else {
+      //add doc to firestore
       addDocument(expenseData)
       expenseCtx.addExpense(expenseData);
     }

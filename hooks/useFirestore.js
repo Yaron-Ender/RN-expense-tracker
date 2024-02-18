@@ -1,5 +1,5 @@
-import { db } from "../store/config";
 import { addDoc, collection } from "firebase/firestore";
+import { db } from "../store/config";
 export function useFirestore(_collection){
 const colref = collection(db,_collection);
 const addDocument = async(addObj)=>{
