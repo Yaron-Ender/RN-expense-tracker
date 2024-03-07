@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect,useState } from "react";
 import IconButton from "../components/UI/IconButton";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 import { GlobalStyles } from "../constants/styles";
@@ -10,26 +10,38 @@ import { ExpensesContext } from "../store/expense-contex";
 import { useFirestore } from "../hooks/useFirestore";
 function ManageExpenses({ route, navigation }) {
   const expenseCtx = useContext(ExpensesContext);
-  const {addDocument} = useFirestore('expenses');
-  
+  const { addDocument, getDocFromFirestore, updateDocuemt, deleteDocument } =
+    useFirestore("expenses");
+  const [selectedExpense,setSelectExpense]=useState(null)
   //we have to check witch event navigated to here
   // add expense or edit expense
   // if the id is defined it means that we should display edit expense
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
-  //fetch the data
-   const selectedExpense = expenseCtx.expenses.find(
-     (expense) => expense.id === editedExpenseId
-   );
+
+  //fetch the data from the context
+  //  let selectedExpense = expenseCtx.expenses.find(
+  //    (expense) => expense.id === editedExpenseId
+  //  );
 
   useLayoutEffect(() => {
     //   navigation.setOptions({title:editedExpenseId?'edited Expense':'Add Expense'})
     navigation.setOptions({
       title: isEditing ? "Edit Expense" : "Add Expense",
     });
-  }, [navigation, isEditing]);
+    if (editedExpenseId) {
+      const getdoc = async () => {
+        let data = "";
+        data = await getDocFromFirestore(editedExpenseId);
+        setSelectExpense((prev) => (prev = data));
+      };
+      getdoc();
+    }
+  }, [navigation, isEditing, editedExpenseId, setSelectExpense]);
+
   function deleteExpenseHandler() {
     expenseCtx.deleteExpense(editedExpenseId);
+ deleteDocument(editedExpenseId)
     navigation.goBack();
   }
   function cancelHandler() {
@@ -37,7 +49,9 @@ function ManageExpenses({ route, navigation }) {
   }
   function confirmHandler(expenseData) {
     if (isEditing) {
-      expenseCtx.updateExpense(editedExpenseId,expenseData);
+      expenseCtx.updateExpense(editedExpenseId, expenseData);
+      //add doc to firestore
+      updateDocuemt(editedExpenseId, expenseData);
     } else {
       //add doc to firestore
       addDocument(expenseData)
@@ -51,6 +65,7 @@ function ManageExpenses({ route, navigation }) {
         submitButtonLabel={isEditing ? "Update" : "Add"}
         onSubmit={confirmHandler}
         onCancel={cancelHandler}
+        // defaultValues={selectedExpense}
         defaultValues={selectedExpense}
       />
       {isEditing && (

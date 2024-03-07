@@ -1,23 +1,43 @@
-import { useState } from "react";
+import { useState,useLayoutEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Input from "./Input";
 import Button from "../UI/Button";
 import { GlobalStyles } from "../../constants/styles";
-function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
+function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues}) {
   const [inputs, setInputs] = useState({
+    amount: {
+      value:"",
+      isValid: true,
+    },
+    date: {
+      value:"",
+      isValid: true,
+    },
+    description: {
+      value:"",
+      isValid: true,
+    },
+  });
+  useLayoutEffect(()=>{
+if(defaultValues){
+  setInputs((prev)=>{
+   return({
     amount: {
       value: defaultValues ? defaultValues.amount.toString() : "",
       isValid: true,
     },
     date: {
-      value: defaultValues ? defaultValues.date.toISOString() : "",
+      value: defaultValues ? defaultValues.date.toDate().toISOString() : "",
       isValid: true,
     },
     description: {
       value: defaultValues ? defaultValues.description : "",
       isValid: true,
     },
-  });
+  }) 
+  })
+}
+  },[defaultValues])
   function inputChangedHandler(inputIdentifier, enteredValue) {
     setInputs((curInputs) => {
       return {
@@ -62,18 +82,19 @@ if (!amountIsValid || !dateIsValid || !descriptionIsValid) {
   return (
     <View tyle={styles.form}>
       <Text style={styles.title}>Your Expense</Text>
-      <View style={styles.inputsRow}>
-        <Input
-          style={styles.rowInput}
-          label="Amount"
-          invalid={!inputs.amount.isValid}
-          textInputConfig={{
-            keyboardType: "decimal-pad",
-            // onChangeText:(e)=>{inputChangedHandler("amount",e)},
-            onChangeText: inputChangedHandler.bind(this, "amount"),
-            value: inputs.amount.value,
-          }}
-        />
+        <View style={styles.inputsRow}>
+  <Input
+    style={styles.rowInput}
+    label="Amount"
+    invalid={!inputs.amount.isValid}
+    textInputConfig={{
+      keyboardType: "decimal-pad",
+      // onChangeText:(e)=>{inputChangedHandler("amount",e)},
+      onChangeText: inputChangedHandler.bind(this, "amount"),
+      value: inputs.amount.value,
+    }}
+  />
+
         <Input
           style={styles.rowInput}
           label="Date"
