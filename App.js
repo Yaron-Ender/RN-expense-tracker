@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 //react-nevigator
 import { NavigationContainer } from "@react-navigation/native";
@@ -9,6 +10,7 @@ import ExpensesContextProvider from "./store/expense-contex";
 import ManageExpenses from "./screens/ManageExpense";
 import AllExpenses from "./screens/AllExpenses";
 import RecentExpenses from "./screens/RecentExpenses";
+import Signup from "./screens/Signup";
 //other comps
 import IconButton from "./components/UI/IconButton";
 //style
@@ -64,12 +66,36 @@ function ExpensesOverView() {
   );
 }
 export default function App() {
+const [user,setUser] = useState(true)
   return (
     <>
-    <StatusBar style="light" />
-     <ExpensesContextProvider>
-      <NavigationContainer>
-        <Stack.Navigator
+      <StatusBar style="light" />
+      <ExpensesContextProvider>
+        <NavigationContainer>
+        {/* <Authenticted /> */}
+        {!user&&
+        <CheckIfAuth />
+        }
+        {user&&
+        <Authenticted />
+        }
+        </NavigationContainer>
+      </ExpensesContextProvider>
+    </>
+  );
+}
+
+function CheckIfAuth (){
+  return(
+  <Stack.Navigator>
+    <Stack.Screen name="signup" component={Signup}/>
+  </Stack.Navigator>
+  )
+}
+
+function Authenticted (){
+ return (
+  <Stack.Navigator
           screenOptions={{
             headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
             headerTintColor: "white",
@@ -87,8 +113,6 @@ export default function App() {
             options={{ presentation: "modal" }}
           />
         </Stack.Navigator>
-      </NavigationContainer>
-    </ExpensesContextProvider>  
-</>
-  );
+
+ )
 }
